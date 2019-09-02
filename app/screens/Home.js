@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   List,
@@ -6,16 +6,64 @@ import {
   Content,
   Text,
 } from 'native-base';
+import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { AddToListInput } from '../components/TextInput';
 import { GreetingText } from '../components/Text';
 import { TaskListItem } from '../components/ListItem';
 
+const TASK_KEY = 'task';
+
 export default function Home() {
   const [tasks, setTasks] = useState([]);
 
-  function addNewTask(task) {
-    setTasks([...tasks, createTaskItem(task)]);
+  const getData = async () => {
+    try {
+      const stringTasks = await AsyncStorage.getItem(TASK_KEY);
+      if (stringTasks !== null) {
+        const tempTasks = JSON.parse(stringTasks);
+        setTasks([...tempTasks]);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const storeData = async (task) => {
+    try {
+      const newTasks = [...tasks, task];
+      await AsyncStorage.setItem(TASK_KEY, JSON.stringify(newTasks));
+      setTasks(newTasks);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  function addNewTask(taskName) {
+    storeData(createTaskItem(taskName));
+  }
+
+  function removeTask(task) {
+    const removedTask = tasks.find((willRemoveTask) => willRemoveTask.id === task.id);
+    const index = tasks.indexOf(removedTask);
+    tasks.splice(index, 1);
+    updateData(tasks);
+  }
+
+  function showRemoveDialog(task) {
+    Alert.alert(
+      'Remove Confirmation',
+      'Delete selected task ?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        { text: 'OK', onPress: () => removeTask(task) },
+      ],
+    );
   }
 
   function createTaskItem(name) {
@@ -29,8 +77,21 @@ export default function Home() {
   function changeItemCompletionStatus(id) {
     const tempTask = tasks.find((task) => task.id === id);
     tempTask.complete = !tempTask.complete;
-    setTasks([...tasks]);
+    updateData(tasks);
   }
+
+  const updateData = async (newTasks) => {
+    try {
+      await AsyncStorage.setItem(TASK_KEY, JSON.stringify(newTasks));
+      setTasks([...tasks]);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+  });
 
   return (
     <Container style={{ backgroundColor: 'white' }}>
@@ -46,6 +107,7 @@ export default function Home() {
             : (
               <ListItem
                 onPress={() => changeItemCompletionStatus(task.id)}
+                onLongPress={() => showRemoveDialog(task)}
                 key={task.id}
               >
                 <TaskListItem
@@ -63,6 +125,7 @@ export default function Home() {
             ? (
               <ListItem
                 onPress={() => changeItemCompletionStatus(task.id)}
+                onLongPress={() => showRemoveDialog(task)}
                 key={task.id}
               >
                 <TaskListItem task={task} />

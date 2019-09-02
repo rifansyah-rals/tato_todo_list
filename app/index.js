@@ -1,9 +1,9 @@
 import React from 'react';
 
-import Home from './screens/Home';
+import AppNavigator from './config/routes';
 
 const App = () => (
-  <Home />
+  <AppNavigator />
 );
 
 export default App;

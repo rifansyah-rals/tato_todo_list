@@ -8,6 +8,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@react-native-community/async-storage": "^1.6.1",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-react": "^7.14.3",
     "native-base": "^2.13.5",
@@ -16,7 +17,8 @@
     "react-native-gesture-handler": "^1.4.1",
     "react-native-reanimated": "^1.2.0",
     "react-native-swipe-list-view": "^2.0.1",
-    "react-navigation": "^3.12.1"
+    "react-navigation": "^3.12.1",
+    "react-navigation-hooks": "^1.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
