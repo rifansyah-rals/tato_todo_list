@@ -2,7 +2,7 @@
 Tato, an todo list app
 
 made using react native. 
-implementation of react hooks, local storage, redux (rematch)
+implementation of react hooks and asyncstorage
 
 ## Screenshots
 
